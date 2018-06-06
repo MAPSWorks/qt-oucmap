@@ -2,61 +2,60 @@
 #include "dijkstra.h"
 using namespace std;
 
-//ȫ�ֱ���Ӧ������ͷ�ļ���, ��Դ�ļ��ж���
-//������ȫ�ֱ������� dijkstra ���� �� oucmap ����֮����Ϣ�Ĵ���
-//��ִ�й�һ��������, ������Ӧ����ֵ, �� oucmap ʹ��
+//全局变量应声明在头文件中, 在源文件中定义
+//这两个全局变量负责 dijkstra 对象 与 oucmap 对象之间信息的传递
+//当执行过一定操作后, 二者中应该有值, 供 oucmap 使用
 
-//�ṩ�˾����������ͼ������֮��Ķ�Ӧ��ϵ
+//提供了景点序号与在图中坐标之间的对应关系
 QVector<QPointF> * points = new QVector<QPointF>();
-//��Դ���Ŀ�ĵ�õ�����������·��, ������ʾ��ͼ�е�
+//有源点和目的点得到的最终坐标路径, 用来显示到图中的
 QVector<QPointF> * vec = new QVector<QPointF>();
-//���ÿ������Ľ���
+//存放每个景点的介绍
 QVector<QString> * strings = new QVector<QString>();
-//���·���Ͼ������Ϣ
+//存放路径上景点的信息
 QString * s = new QString();
 
-//������Ŀ
+//景点数目
 const int MAX_NUM = 15;
 TVNode adjList[] = {
-	*new TVNode(0, "������", "ѧУ��������"),
-	*new TVNode(1, "����ѧԺ", "�����еĵ���"),
-	*new TVNode(2, "��Զ¥", "�����ǵĵ���"),
-	*new TVNode(3, "�ϴ���", "ѧУ���ϴ���"),
-	*new TVNode(4, "����", "�ϱߵ�ѧ����Ԣ"),
-	*new TVNode(5, "������", "�������εĵط�"),
-	*new TVNode(6, "��ѧ��", "ѧ֪ʶ�ĵط�"),
-	*new TVNode(7, "����", "���ߵ�ѧ����Ԣ"),
-	*new TVNode(8, "��Ժ��¥", "��ϢѧԺѧ���ĵط�"),
-	*new TVNode(9, "��Ժ��¥", "�������ұ���ѧԺ"),
-	*new TVNode(10, "ͼ���", "����ͼ���"),
-	*new TVNode(11, "����", "����¶��������"),
-	*new TVNode(12, "���Ӷ�", "һ��Сɽ"),
-	*new TVNode(13, "����ѧԺ", "����ϵѧ���ĵ���"),
-	*new TVNode(14, "��ѧ��ѧԺ", "������ǵĵ���")
+	*new TVNode(0, "西大门", "学校的西大门"),
+	*new TVNode(1, "工程学院", "工科男的地盘"),
+	*new TVNode(2, "行远楼", "大佬们的地盘"),
+	*new TVNode(3, "南大门", "学校的南大门"),
+	*new TVNode(4, "南区", "南边的学生公寓"),
+	*new TVNode(5, "体育馆", "上体育课的地方"),
+	*new TVNode(6, "教学区", "学知识的地方"),
+	*new TVNode(7, "北区", "北边的学生公寓"),
+	*new TVNode(8, "信院北楼", "信息学院学生的地方")	*new TVNode(9, "信院南楼", "别名国家保密学院"),
+	*new TVNode(10, "图书馆", "就是图书馆"),
+	*new TVNode(11, "东操", "东边露天体育场"),
+	*new TVNode(12, "五子顶", "一座小山"),
+	*new TVNode(13, "法政学院", "法律系学生的地盘"),
+	*new TVNode(14, "数学科学院", "真大佬们的地盘")
 };
 const double INFINE = 999999.9;
-const int V = 15;                                //������
-const int E = 24;                                //����
-double disTo[100];                               //��¼���ǵ���õ�ʱ���ܳ���
-int edgeTo[100];                                 //��¼����·�������һ������
+const int V = 15;                                //顶点数
+const int E = 24;                                //边数
+double disTo[100];                               //记录的是到达该点时的总长度
+int edgeTo[100];                                 //记录的是路径上最后一个顶点
 
 
-map<int, vector<tuple<int, int, double>>> EWD;   //�洢ͼ�����ݽṹ, ����, ����������������ıߵļ���
+map<int, vector<tuple<int, int, double>>> EWD;   //存储图的数据结构, 顶点, 和与这个顶点相连的边的集合
 
-												 //�������ȶ��У��洢index ������distTo[index]��Ϊ���ȶ��е���������
-												 //�Ƚ��� GreaterThanByDist ���� distTo[] ��ֵԽС����Խǰ��
+//索引优先队列，存储index ，并以distTo[index]作为优先队列的排序依据
+//比较器 GreaterThanByDist 定义 distTo[] 的值越小排在越前面
 struct GreaterThanByDist {
 	bool operator()(const int i, const int j) const {
 		return disTo[i] > disTo[j];
 	}
 };
 
-priority_queue<int, vector<int>, GreaterThanByDist> minpq;                //�������ȶ���
+priority_queue<int, vector<int>, GreaterThanByDist> minpq;                //索引优先队列
 
 Dijkstra::Dijkstra() {
 
 	{
-		//Ӳ����
+		//硬编码
 		EWD[0].push_back(make_tuple(0, 5, 40));
 		EWD[5].push_back(make_tuple(5, 0, 40));
 
@@ -178,8 +177,8 @@ void Dijkstra::relax(tuple<int, int, double> edge) {
 	}
 }
 
-// s Դ��
-//����������
+// s 源点
+//很像广度搜索
 void Dijkstra::dijkstra(int s) {
 	for (int i = 0; i < V; i++) {
 		disTo[i] = INFINE;
@@ -204,12 +203,12 @@ void Dijkstra::computeSP(int source, int vertex) {
 	}
 	path.push(source);
 
-	//���³�ʼ�� vec, �������ֺܶ���·��
+	//重新初始化 vec, 否则会出现很多条路径
 	vec->clear();
 	s->clear();
 	while (!path.empty()) {
 		//cout << adjList[path.top()].name << "    ";
-		//ʹ�ú���at(), ����Ӧ��ʹ���±������, �������
+		//使用函数at(), 而不应该使用下标运算符, 解决问题
 		vec->append(points->at(path.top()));
 		s->append(strings->at(path.top()));
 		path.pop();
@@ -221,7 +220,7 @@ void Dijkstra::computeSP(int source, int vertex) {
 	s->append(to_string(disTo[vertex]).c_str());
 }
 
-//��ӡͼ
+//打印图
 void Dijkstra::showEWD() {
 	cout << "graph: " << endl;
 	for (int i = 0; i < V; i++) {
