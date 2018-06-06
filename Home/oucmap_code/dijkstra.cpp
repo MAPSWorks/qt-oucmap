@@ -26,7 +26,8 @@ TVNode adjList[] = {
 	*new TVNode(5, "体育馆", "上体育课的地方"),
 	*new TVNode(6, "教学区", "学知识的地方"),
 	*new TVNode(7, "北区", "北边的学生公寓"),
-	*new TVNode(8, "信院北楼", "信息学院学生的地方")	*new TVNode(9, "信院南楼", "别名国家保密学院"),
+	*new TVNode(8, "信院北楼", "信息学院学生的地方")
+	*new TVNode(9, "信院南楼", "别名国家保密学院"),
 	*new TVNode(10, "图书馆", "就是图书馆"),
 	*new TVNode(11, "东操", "东边露天体育场"),
 	*new TVNode(12, "五子顶", "一座小山"),
